@@ -1,6 +1,6 @@
 provider:
   name: openfaas
-  gateway: http://172.31.33.250:8080
+  gateway: http://172.31.33.204:8080
 
 functions:
   hello-python:
