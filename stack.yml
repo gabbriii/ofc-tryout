@@ -1,9 +1,9 @@
 provider:
   name: openfaas
-  gateway: http://172.31.33.205:8080
+  gateway: http://172.31.33.206:8080
 
 functions:
-  hello-node:
-    lang: node12
+  hello-go:
+    lang: golang
     handler: ./hello
-    image: hello-node
+    image: hello-go
