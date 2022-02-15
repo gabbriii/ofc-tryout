@@ -4,6 +4,6 @@ provider:
 
 functions:
   hello-go:
-    lang: golang
+    lang: go
     handler: ./hello
     image: hello-go
