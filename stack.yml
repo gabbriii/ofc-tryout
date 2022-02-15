@@ -5,5 +5,5 @@ provider:
 functions:
   hello-python:
     lang:python
-    handler: ./hello
+    handler: ./hallo
     image: python-hello2
