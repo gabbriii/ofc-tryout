@@ -1,9 +1,9 @@
 provider:
   name: openfaas
-  gateway: http://172.31.33.204:8080
+  gateway: http://172.31.33.205:8080
 
 functions:
-  hello-python:
-    lang: python
+  hello-node:
+    lang: node12
     handler: ./hello
-    image: hello-python
+    image: hello-node
