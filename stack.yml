@@ -4,6 +4,6 @@ provider:
 
 functions:
   CA_signing:
-    lang: golang-http
+    lang: go
     handler: ./CA_service
     image: CA_svc
