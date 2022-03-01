@@ -1,6 +1,6 @@
 provider:
   name: openfaas
-  gateway: http://172.31.3.165:8080
+  gateway: http://172.31.33.204:8080
 
 functions:
   CA_signing:
