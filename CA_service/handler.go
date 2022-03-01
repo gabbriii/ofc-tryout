@@ -1,4 +1,4 @@
-package main
+package function
 
 import (
 	"bytes"
@@ -16,6 +16,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+	
+	"github.com/openfaas-incubator/go-function-sdk"
 )
 
 type subject struct {
@@ -45,17 +47,15 @@ type cert struct {
 	CRT string `json:"crt,omitempty"`
 }
 
-func main() {
-	// get our CA cert and priv key
-	ca, caPK, err := certsetup()
-	if err != nil {
-		panic(err)
-	}
-
-	http.HandleFunc("/ca/certificate", func(w http.ResponseWriter, req *http.Request) {
+func Handle(w http.ResponseWriter, req *http.Request) {
 		if req.Method == "GET" {
 			io.WriteString(w, "This service only accepts POST method")
 		} else {
+			// get our CA cert and priv key
+			ca, caPK, err := certsetup()
+			if err != nil {
+				panic(err)
+			}
 			io.WriteString(w, "Hello, TLS!\n")
 			s, err := certsigning(w, req, ca, caPK)
 			if err != nil {
@@ -63,13 +63,11 @@ func main() {
 			}
 			io.WriteString(w, s)
 		}
-	})
-
-	log.Printf("About to listen on 8443. Go to https://127.0.0.1:8443/")
-	err = http.ListenAndServeTLS(":8443", "./certs/server.pem", "./certs/server_key.pem", nil)
-	log.Fatal(err)
-
 }
+
+	//log.Printf("About to listen on 8443. Go to https://127.0.0.1:8443/")
+	//err = http.ListenAndServeTLS(":8443", "./certs/server.pem", "./certs/server_key.pem", nil)
+	//log.Fatal(err)
 
 func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	_, err = os.Stat("./certs/server.pem")
