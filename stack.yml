@@ -3,7 +3,7 @@ provider:
   gateway: http://172.31.33.204:8080
 
 functions:
-  simple_http_go:
+  CA_service:
     lang: golang-middleware
     handler: ./CA_service
     image: sh_go
