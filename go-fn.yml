@@ -1,7 +1,7 @@
 version: 1.0
 provider:
   name: openfaas
-  gateway: 172.31.42.58:8080
+  gateway: 172.31.16.205:8080
 functions:
   go-fn:
     lang: go
