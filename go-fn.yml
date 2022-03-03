@@ -1,0 +1,9 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://172.31.33.204:8080
+functions:
+  go-fn:
+    lang: go
+    handler: ./go-fn
+    image: go-fn:latest
