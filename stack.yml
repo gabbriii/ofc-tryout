@@ -3,7 +3,8 @@ provider:
   name: openfaas
   gateway: http://172.31.21.111:8080
 functions:
-  go-fn-2:
-    lang: go
-    handler: ./go-fn
-    image: go-fn-2:latest
+  go-middle:
+    lang: golang-middleware
+    handler: ./go-middle
+    image: go-middle:latest
+
