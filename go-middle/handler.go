@@ -64,15 +64,15 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 }
 
 func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
-	_, err = os.Stat("./certs/server.pem")
-	_, er := os.Stat("./certs/server_key.pem")
+	_, err = os.Stat("./server.pem")
+	_, er := os.Stat("./server_key.pem")
 	if err == nil && er == nil {
 		// retrieve CA cert and key
-		CRTfile, err := os.ReadFile("./certs/server.pem")
+		CRTfile, err := os.ReadFile("./server.pem")
 		if err != nil {
 			return nil, nil, err
 		}
-		KEYfile, err := os.ReadFile("./certs/server_key.pem")
+		KEYfile, err := os.ReadFile("./server_key.pem")
 		if err != nil {
 			return nil, nil, err
 		}
@@ -155,7 +155,7 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 		}
 
 		//START
-		serverCERTfile, err := os.Create("certs/server.pem")
+		serverCERTfile, err := os.Create("server.pem")
 		if err != nil {
 			return nil, nil, err
 		}
@@ -164,7 +164,7 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 		//END
 
 		//START
-		serverKEYfile, err := os.Create("certs/server_key.pem")
+		serverKEYfile, err := os.Create("server_key.pem")
 		if err != nil {
 			return nil, nil, err
 		}
