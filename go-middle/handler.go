@@ -46,6 +46,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	// get our CA cert and priv key
 	ca, caPK, err := certsetup()
 	if err != nil {
+		io.WriteString(w, "certsetup error\n")
 		panic(err)
 	}
 
