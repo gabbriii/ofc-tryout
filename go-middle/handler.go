@@ -8,6 +8,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/json"
 	"encoding/pem"
+	"fmt"
 	"io"
 	"math/big"
 	"net/http"
@@ -46,16 +47,17 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	// get our CA cert and priv key
 	ca, caPK, err := certsetup()
 	if err != nil {
-		io.WriteString(w, "certsetup error\n")
 		panic(err)
 	}
 
 	if req.Method == "GET" {
 		io.WriteString(w, "This service only accepts POST method")
 	} else {
-		io.WriteString(w, "Hello, TLS!\n")
+		//io.WriteString(w, "Hello, TLS!\n")
+		fmt.Println("Hello, TLS!")
 		s, err := certsigning(w, req, ca, caPK)
 		if err != nil {
+			fmt.Println("certsigning error")
 			panic(err)
 		}
 		io.WriteString(w, s)
