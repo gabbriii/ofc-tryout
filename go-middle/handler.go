@@ -1,20 +1,9 @@
 package function
 
 import (
-	"bytes"
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/x509"
-	"crypto/x509/pkix"
-	"encoding/json"
-	"encoding/pem"
 	"io"
 	"math/big"
-	"net"
 	"net/http"
-	"os"
-	"strconv"
-	"time"
 )
 
 type subject struct {
@@ -46,23 +35,24 @@ type cert struct {
 
 func Handle(w http.ResponseWriter, req *http.Request) {
 	// get our CA cert and priv key
-	ca, caPK, err := certsetup()
+	/*ca, caPK, err := certsetup()
 	if err != nil {
 		panic(err)
-	}
+	}*/
 
 	if req.Method == "GET" {
 		io.WriteString(w, "This service only accepts POST method")
 	} else {
 		io.WriteString(w, "Hello, TLS!\n")
-		s, err := certsigning(w, req, ca, caPK)
+		/*s, err := certsigning(w, req, ca, caPK)
 		if err != nil {
 			panic(err)
 		}
-		io.WriteString(w, s)
+		io.WriteString(w, s)*/
 	}
 }
 
+/*
 func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	_, err = os.Stat("./server.pem")
 	_, er := os.Stat("./server_key.pem")
@@ -119,10 +109,10 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 		}
 
 		// create the CA
-		/*caBytes, err := x509.CreateCertificate(rand.Reader, ca, ca, &caPrivKey.PublicKey, caPrivKey)
-		if err != nil {
-			return nil, nil, err
-		}*/
+		//caBytes, err := x509.CreateCertificate(rand.Reader, ca, ca, &caPrivKey.PublicKey, caPrivKey)
+		//if err != nil {
+		//	return nil, nil, err
+		//}
 
 		//NEW START
 		// create our CA cert
@@ -240,3 +230,4 @@ func get_PK(b []byte, CSR int) (PK PublicKey) {
 	PK.E = CSR
 	return
 }
+*/
