@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"io"
+	"log"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -54,9 +55,9 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	} else {
 		io.WriteString(w, "Hello, TLS!\n")
 		s, _ := certsigning(w, req, ca, caPK)
-		/*if err != nil {
-			panic(err)
-		}*/
+		if err != nil {
+			log.Fatal(err)
+		}
 		io.WriteString(w, s)
 	}
 }
