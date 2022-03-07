@@ -1,9 +1,18 @@
 package function
 
 import (
+	"bytes"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/json"
+	"encoding/pem"
 	"io"
 	"math/big"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type subject struct {
@@ -35,26 +44,25 @@ type cert struct {
 
 func Handle(w http.ResponseWriter, req *http.Request) {
 	// get our CA cert and priv key
-	/*ca, caPK, err := certsetup()
+	ca, caPK, err := certsetup()
 	if err != nil {
 		panic(err)
-	}*/
+	}
 
 	if req.Method == "GET" {
 		io.WriteString(w, "This service only accepts POST method")
 	} else {
 		io.WriteString(w, "Hello, TLS!\n")
-		/*s, err := certsigning(w, req, ca, caPK)
+		s, err := certsigning(w, req, ca, caPK)
 		if err != nil {
 			panic(err)
 		}
-		io.WriteString(w, s)*/
+		io.WriteString(w, s)
 	}
 }
 
-/*
 func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
-	_, err = os.Stat("./server.pem")
+	/*_, err = os.Stat("./server.pem")
 	_, er := os.Stat("./server_key.pem")
 	if err == nil && er == nil {
 		// retrieve CA cert and key
@@ -82,87 +90,87 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 		if err != nil {
 			return nil, nil, err
 		}
-	} else {
-		// set up our CA
-		ca = &x509.Certificate{
-			SerialNumber: big.NewInt(2021),
-			Subject: pkix.Name{
-				Organization:  []string{"Entrust(fake)"},
-				Country:       []string{"ES"},
-				Province:      []string{""},
-				Locality:      []string{"Barcelona"},
-				StreetAddress: []string{"Golden Gate Bridge"},
-				PostalCode:    []string{"94016"},
-			},
-			NotBefore:             time.Now(),
-			NotAfter:              time.Now().AddDate(10, 0, 0),
-			IsCA:                  true,
-			ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-			KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
-			BasicConstraintsValid: true,
-		}
-
-		// create our private and public key
-		caPK, err = rsa.GenerateKey(rand.Reader, 4096)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		// create the CA
-		//caBytes, err := x509.CreateCertificate(rand.Reader, ca, ca, &caPrivKey.PublicKey, caPrivKey)
-		//if err != nil {
-		//	return nil, nil, err
-		//}
-
-		//NEW START
-		// create our CA cert
-		cert := &x509.Certificate{
-			SerialNumber: big.NewInt(2021),
-			Subject: pkix.Name{
-				Organization:  []string{"Entrust-IT automation"},
-				Country:       []string{"ES"},
-				Province:      []string{""},
-				Locality:      []string{"Barcelona"},
-				StreetAddress: []string{"WTC"},
-				PostalCode:    []string{"94016"},
-			},
-			IPAddresses:  []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
-			NotBefore:    time.Now(),
-			NotAfter:     time.Now().AddDate(10, 0, 0),
-			SubjectKeyId: []byte{1, 2, 3, 4, 6},
-			ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-			KeyUsage:     x509.KeyUsageDigitalSignature,
-		}
-
-		certPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		certBytes, err := x509.CreateCertificate(rand.Reader, cert, ca, &certPrivKey.PublicKey, caPK)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		//START
-		serverCERTfile, err := os.Create("server.pem")
-		if err != nil {
-			return nil, nil, err
-		}
-		pem.Encode(serverCERTfile, &pem.Block{Type: "CERTIFICATE", Bytes: certBytes})
-		serverCERTfile.Close()
-		//END
-
-		//START
-		serverKEYfile, err := os.Create("server_key.pem")
-		if err != nil {
-			return nil, nil, err
-		}
-		pem.Encode(serverKEYfile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(certPrivKey)})
-		serverKEYfile.Close()
-		//END
-		//NEW END
+	} else {*/
+	// set up our CA
+	ca = &x509.Certificate{
+		SerialNumber: big.NewInt(2021),
+		Subject: pkix.Name{
+			Organization:  []string{"Entrust(fake)"},
+			Country:       []string{"ES"},
+			Province:      []string{""},
+			Locality:      []string{"Barcelona"},
+			StreetAddress: []string{"Golden Gate Bridge"},
+			PostalCode:    []string{"94016"},
+		},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().AddDate(10, 0, 0),
+		IsCA:                  true,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+		BasicConstraintsValid: true,
 	}
+
+	// create our private and public key
+	caPK, err = rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// create the CA
+	//caBytes, err := x509.CreateCertificate(rand.Reader, ca, ca, &caPrivKey.PublicKey, caPrivKey)
+	//if err != nil {
+	//	return nil, nil, err
+	//}
+
+	//NEW START
+	// create our CA cert
+	/*cert := &x509.Certificate{
+		SerialNumber: big.NewInt(2021),
+		Subject: pkix.Name{
+			Organization:  []string{"Entrust-IT automation"},
+			Country:       []string{"ES"},
+			Province:      []string{""},
+			Locality:      []string{"Barcelona"},
+			StreetAddress: []string{"WTC"},
+			PostalCode:    []string{"94016"},
+		},
+		IPAddresses:  []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
+		NotBefore:    time.Now(),
+		NotAfter:     time.Now().AddDate(10, 0, 0),
+		SubjectKeyId: []byte{1, 2, 3, 4, 6},
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+	}
+
+	certPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	certBytes, err := x509.CreateCertificate(rand.Reader, cert, ca, &certPrivKey.PublicKey, caPK)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	//START
+	serverCERTfile, err := os.Create("server.pem")
+	if err != nil {
+		return nil, nil, err
+	}
+	pem.Encode(serverCERTfile, &pem.Block{Type: "CERTIFICATE", Bytes: certBytes})
+	serverCERTfile.Close()
+	//END
+
+	//START
+	serverKEYfile, err := os.Create("server_key.pem")
+	if err != nil {
+		return nil, nil, err
+	}
+	pem.Encode(serverKEYfile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(certPrivKey)})
+	serverKEYfile.Close()*/
+	//END
+	//NEW END
+
 	return
 }
 
@@ -230,4 +238,3 @@ func get_PK(b []byte, CSR int) (PK PublicKey) {
 	PK.E = CSR
 	return
 }
-*/
