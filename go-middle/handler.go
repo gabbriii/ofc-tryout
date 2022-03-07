@@ -180,12 +180,12 @@ func certsigning(w http.ResponseWriter, req *http.Request, ca *x509.Certificate,
 	var CSR csr
 	err = dec.Decode(&CSR)
 	if err != nil {
-		return "", err
+		return "decode fail", err
 	}
 
 	n, err := strconv.Atoi(CSR.Exponent)
 	if err != nil {
-		return "", err
+		return "atoi fail", err
 	}
 	PK := get_PK([]byte(CSR.PublicKey), n)
 
@@ -213,14 +213,14 @@ func certsigning(w http.ResponseWriter, req *http.Request, ca *x509.Certificate,
 
 	fakePrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
 	if err != nil {
-		return "", err
+		return "fakePK fail", err
 	}
 	fakePrivKey.PublicKey.N = PK.N
 	fakePrivKey.PublicKey.E = PK.E
 
 	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &fakePrivKey.PublicKey, caPK)
 	if err != nil {
-		return "", err
+		return "signing fail", err
 	}
 	clientcertPEM := new(bytes.Buffer)
 	pem.Encode(clientcertPEM, &pem.Block{
