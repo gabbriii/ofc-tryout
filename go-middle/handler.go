@@ -183,10 +183,10 @@ func certsigning(w http.ResponseWriter, req *http.Request, ca *x509.Certificate,
 	if err != nil {
 		return "decode fail", err
 	}
-
-	n, err := strconv.Atoi(CSR.Exponent)
+	exp := CSR.Exponent
+	n, err := strconv.Atoi(exp)
 	if err != nil {
-		t := err.Error()
+		t := err.Error() //write down
 		return t, err
 	}
 	PK := get_PK([]byte(CSR.PublicKey), n)
