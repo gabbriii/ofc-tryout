@@ -68,10 +68,10 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 		Subject: pkix.Name{
 			Organization:  []string{"Entrust(fake)"},
 			Country:       []string{"ES"},
-			Province:      []string{""},
+			Province:      []string{"Catalunya"},
 			Locality:      []string{"Barcelona"},
-			StreetAddress: []string{"Golden Gate Bridge"},
-			PostalCode:    []string{"94016"},
+			StreetAddress: []string{"Moll de Barcelona"},
+			PostalCode:    []string{"s/n"},
 		},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(10, 0, 0),
