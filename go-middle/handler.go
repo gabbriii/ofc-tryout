@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"io"
-	"log"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -47,51 +46,22 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	// get our CA cert and priv key
 	ca, caPK, err := certsetup()
 	if err != nil {
-		panic(err)
+		io.WriteString(w, err.Error())
 	}
 
 	if req.Method == "GET" {
 		io.WriteString(w, "This service only accepts POST method")
 	} else {
 		io.WriteString(w, "Hello, TLS!\n")
-		s, _ := certsigning(w, req, ca, caPK)
+		s, err := certsigning(w, req, ca, caPK)
 		if err != nil {
-			log.Fatal(err)
+			io.WriteString(w, err.Error())
 		}
 		io.WriteString(w, s)
 	}
 }
 
 func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
-	/*_, err = os.Stat("./server.pem")
-	_, er := os.Stat("./server_key.pem")
-	if err == nil && er == nil {
-		// retrieve CA cert and key
-		CRTfile, err := os.ReadFile("./server.pem")
-		if err != nil {
-			return nil, nil, err
-		}
-		KEYfile, err := os.ReadFile("./server_key.pem")
-		if err != nil {
-			return nil, nil, err
-		}
-		pemBlock, _ := pem.Decode(CRTfile)
-		if pemBlock == nil {
-			panic("pem.Decode failed")
-		}
-		pemBlock2, _ := pem.Decode(KEYfile)
-		if pemBlock2 == nil {
-			panic("pem.Decode failed")
-		}
-		ca, err = x509.ParseCertificate(pemBlock.Bytes)
-		if err != nil {
-			return nil, nil, err
-		}
-		caPK, err = x509.ParsePKCS1PrivateKey(pemBlock2.Bytes)
-		if err != nil {
-			return nil, nil, err
-		}
-	} else {*/
 	// set up our CA
 	ca = &x509.Certificate{
 		SerialNumber: big.NewInt(2021),
@@ -116,62 +86,6 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
-	// create the CA
-	//caBytes, err := x509.CreateCertificate(rand.Reader, ca, ca, &caPrivKey.PublicKey, caPrivKey)
-	//if err != nil {
-	//	return nil, nil, err
-	//}
-
-	//NEW START
-	// create our CA cert
-	/*cert := &x509.Certificate{
-		SerialNumber: big.NewInt(2021),
-		Subject: pkix.Name{
-			Organization:  []string{"Entrust-IT automation"},
-			Country:       []string{"ES"},
-			Province:      []string{""},
-			Locality:      []string{"Barcelona"},
-			StreetAddress: []string{"WTC"},
-			PostalCode:    []string{"94016"},
-		},
-		IPAddresses:  []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
-		NotBefore:    time.Now(),
-		NotAfter:     time.Now().AddDate(10, 0, 0),
-		SubjectKeyId: []byte{1, 2, 3, 4, 6},
-		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-		KeyUsage:     x509.KeyUsageDigitalSignature,
-	}
-
-	certPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	certBytes, err := x509.CreateCertificate(rand.Reader, cert, ca, &certPrivKey.PublicKey, caPK)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	//START
-	serverCERTfile, err := os.Create("server.pem")
-	if err != nil {
-		return nil, nil, err
-	}
-	pem.Encode(serverCERTfile, &pem.Block{Type: "CERTIFICATE", Bytes: certBytes})
-	serverCERTfile.Close()
-	//END
-
-	//START
-	serverKEYfile, err := os.Create("server_key.pem")
-	if err != nil {
-		return nil, nil, err
-	}
-	pem.Encode(serverKEYfile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(certPrivKey)})
-	serverKEYfile.Close()*/
-	//END
-	//NEW END
-
 	return
 }
 
@@ -181,13 +95,11 @@ func certsigning(w http.ResponseWriter, req *http.Request, ca *x509.Certificate,
 	var CSR csr
 	err = dec.Decode(&CSR)
 	if err != nil {
-		return "decode fail", err
+		return "", err
 	}
-	exp := CSR.Exponent
-	n, err := strconv.Atoi(exp)
+	n, err := strconv.Atoi(CSR.Exponent)
 	if err != nil {
-		t := err.Error() //write down
-		return t, err
+		return "", err
 	}
 	PK := get_PK([]byte(CSR.PublicKey), n)
 
@@ -215,14 +127,14 @@ func certsigning(w http.ResponseWriter, req *http.Request, ca *x509.Certificate,
 
 	fakePrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
 	if err != nil {
-		return "fakePK fail", err
+		return "", err
 	}
 	fakePrivKey.PublicKey.N = PK.N
 	fakePrivKey.PublicKey.E = PK.E
 
 	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &fakePrivKey.PublicKey, caPK)
 	if err != nil {
-		return "signing fail", err
+		return "", err
 	}
 	clientcertPEM := new(bytes.Buffer)
 	pem.Encode(clientcertPEM, &pem.Block{
