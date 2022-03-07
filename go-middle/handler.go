@@ -186,7 +186,8 @@ func certsigning(w http.ResponseWriter, req *http.Request, ca *x509.Certificate,
 
 	n, err := strconv.Atoi(CSR.Exponent)
 	if err != nil {
-		return "atoi fail", err
+		t := err.Error()
+		return t, err
 	}
 	PK := get_PK([]byte(CSR.PublicKey), n)
 
