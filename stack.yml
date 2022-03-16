@@ -7,4 +7,3 @@ functions:
     lang: golang-middleware
     handler: ./go-middle
     image: go-middle:latest
-
