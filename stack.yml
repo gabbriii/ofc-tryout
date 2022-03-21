@@ -7,3 +7,7 @@ functions:
     lang: golang-middleware
     handler: ./go-middle
     image: go-middle:latest
+  hello:
+    lang: node12
+    handler: ./handler
+    image: hello12:latest
