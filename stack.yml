@@ -11,4 +11,4 @@ functions:
   hello:
     lang: node12
     handler: ./handler
-    image: hello12:latest
+    image: hello:node12
