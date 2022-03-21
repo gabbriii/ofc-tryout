@@ -3,12 +3,12 @@ provider:
   name: openfaas
   gateway: http://172.31.0.121:8080
 functions:
- # go-middle:
-  #  lang: golang-middleware
-   # handler: ./go-middle
-   # image: go-middle:latest
+  go-middle:
+    lang: golang-middleware
+    handler: ./go-middle
+    image: go-middle:latest
 
   hello:
     lang: node12
-    handler: ./handler
+    handler: ./hello
     image: hello:node12
