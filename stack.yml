@@ -3,7 +3,7 @@ provider:
   name: openfaas
   gateway: http://172.31.0.121:8080
 functions:
-  go-middle:
+  entrust-ca:
     lang: golang-middleware
     handler: ./entrust-ca
     image: entrust-ca:latest
