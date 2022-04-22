@@ -5,8 +5,8 @@ provider:
 functions:
   go-middle:
     lang: golang-middleware
-    handler: ./go-middle
-    image: go-middle:latest
+    handler: ./Entrust-CA
+    image: Entrust-CA:latest
 
   hello:
     lang: node12
