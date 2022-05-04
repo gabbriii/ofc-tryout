@@ -64,8 +64,8 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 
 func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, er error, err error) {
 	//new begin
-	_, err = os.Stat("./certs/server.pem")
-	_, er = os.Stat("./certs/server_key.pem")
+	_, err = os.Stat("../certs/server.pem")
+	_, er = os.Stat("../certs/server_key.pem")
 	if err != nil || er != nil {
 		return nil, nil, er, err
 	}
