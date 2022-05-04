@@ -11,6 +11,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -61,9 +62,40 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
+func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, er error, err error) {
+	//new begin
+	_, err = os.Stat("./certs/server.pem")
+	_, er = os.Stat("./certs/server_key.pem")
+	if err != nil || er != nil {
+		return nil, nil, er, err
+	}
+	CRTfile, err := os.ReadFile("./certs/CA.pem")
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	KEYfile, err := os.ReadFile("./certs/CAkey.pem")
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	pemBlock, _ := pem.Decode(CRTfile)
+	if pemBlock == nil {
+		panic("pem.Decode failed")
+	}
+	pemBlock2, _ := pem.Decode(KEYfile)
+	if pemBlock2 == nil {
+		panic("pem.Decode failed")
+	}
+	ca, err = x509.ParseCertificate(pemBlock.Bytes)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	caPK, err = x509.ParsePKCS1PrivateKey(pemBlock2.Bytes)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	return
 	// set up our CA
-	ca = &x509.Certificate{
+	/*ca = &x509.Certificate{
 		SerialNumber: big.NewInt(2021),
 		Subject: pkix.Name{
 			Organization:  []string{"Entrust(fake)"},
@@ -86,7 +118,7 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return
+	return*/
 }
 
 func certsigning(w http.ResponseWriter, req *http.Request, ca *x509.Certificate, caPK *rsa.PrivateKey) (s string, err error) {
