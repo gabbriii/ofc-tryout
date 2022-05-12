@@ -8,8 +8,7 @@ functions:
     handler: ./entrust-ca
     image: entrust-ca:latest
     environment_file:
-      - ./certs/CAkey.pem
-      - ./certs/CA.pem
+      - ./certs/certs.yml
 
   hello:
     lang: node12

@@ -62,38 +62,31 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, er error, err error) {
+func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	//new begin
-	_, err = os.Stat("../certs/server.pem")
-	_, er = os.Stat("../certs/server_key.pem")
-	if err != nil || er != nil {
-		return nil, nil, er, err
+	CA, ca_existance := os.LookupEnv("CA")
+	CA_KEY, ca_key_existance := os.LookupEnv("CA_KEY")
+	if !ca_existance || !ca_key_existance {
+		panic("CA or CA_key not found")
 	}
-	CRTfile, err := os.ReadFile("./certs/CA.pem")
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	KEYfile, err := os.ReadFile("./certs/CAkey.pem")
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	pemBlock, _ := pem.Decode(CRTfile)
+	pemBlock, _ := pem.Decode([]byte(CA))
 	if pemBlock == nil {
 		panic("pem.Decode failed")
 	}
-	pemBlock2, _ := pem.Decode(KEYfile)
+	pemBlock2, _ := pem.Decode([]byte(CA_KEY))
 	if pemBlock2 == nil {
 		panic("pem.Decode failed")
 	}
 	ca, err = x509.ParseCertificate(pemBlock.Bytes)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 	caPK, err = x509.ParsePKCS1PrivateKey(pemBlock2.Bytes)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 	return
+
 	// set up our CA
 	/*ca = &x509.Certificate{
 		SerialNumber: big.NewInt(2021),
