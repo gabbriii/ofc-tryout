@@ -8,7 +8,7 @@ functions:
     handler: ./entrust-ca
     image: entrust-ca:latest
     environment_file:
-      - ./certs/certs.yml
+      - certs.yml
 
   hello:
     lang: node12
