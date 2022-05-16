@@ -7,9 +7,6 @@ functions:
     lang: golang-middleware
     handler: ./entrust-ca
     image: entrust-ca:latest
-    environment_file:
-      - certs.yml
-
   hello:
     lang: node12
     handler: ./hello
