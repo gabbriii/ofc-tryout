@@ -11,6 +11,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -66,8 +67,34 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 
 func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	//new begin
-	CA := []byte(ca_str)
-	CA_KEY := []byte(ca_key_str)
+	//CA := []byte(ca_str)
+	//CA_KEY := []byte(ca_key_str)
+	var CA []byte
+	var CA_KEY []byte
+
+	f1, err := os.Create("/tmp/CA.pem")
+	if err != nil {
+		return nil, nil, err
+	}
+	defer f1.Close()
+	_, err = f1.WriteString(ca_str)
+
+	f2, err := os.Create("/tmp/CAkey.pem")
+	if err != nil {
+		return nil, nil, err
+	}
+	defer f2.Close()
+	_, err = f2.WriteString(ca_key_str)
+
+	CA, err = os.ReadFile("/tmp/CA.pem")
+	if err != nil {
+		return nil, nil, err
+	}
+	CA_KEY, err = os.ReadFile("/tmp/CAkey.pem")
+	if err != nil {
+		return nil, nil, err
+	}
+
 	pemBlock, _ := pem.Decode(CA)
 	if pemBlock == nil {
 		panic("pem.Decode CA failed")
