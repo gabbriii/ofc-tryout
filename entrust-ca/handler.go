@@ -8,6 +8,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/json"
 	"encoding/pem"
+	"fmt"
 	"io"
 	"math/big"
 	"net/http"
@@ -78,7 +79,6 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	}
 	defer f1.Close()
 	_, err = f1.WriteString(ca_str)
-	_, err = os.ReadFile("/tmp/CA.pem")
 
 	f2, err := os.Create("/tmp/CAkey.pem")
 	if err != nil {
@@ -86,16 +86,17 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	}
 	defer f2.Close()
 	_, err = f2.WriteString(ca_key_str)
-	_, err = os.ReadFile("/tmp/CAkey.pem")
 
 	CA, err = os.ReadFile("/tmp/CA.pem")
 	if err != nil {
 		return nil, nil, err
 	}
+	fmt.Println(string(CA))
 	CA_KEY, err = os.ReadFile("/tmp/CAkey.pem")
 	if err != nil {
 		return nil, nil, err
 	}
+	fmt.Println(string(CA_KEY))
 
 	pemBlock, _ := pem.Decode(CA)
 	if pemBlock == nil {
