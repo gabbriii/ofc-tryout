@@ -106,11 +106,11 @@ func certsetup() (ca *x509.Certificate, caPK *rsa.PrivateKey, err error) {
 	if pemBlock2 == nil {
 		panic("pem.Decode CA_KEY failed")
 	}
-	ca, err = x509.ParseCertificate(CA) //pemBlock.Bytes
+	ca, err = x509.ParseCertificate(pemBlock.Bytes) //pemBlock.Bytes
 	if err != nil {
 		return nil, nil, err
 	}
-	caPK, err = x509.ParsePKCS1PrivateKey(CA_KEY) //pemBlock2.Bytes
+	caPK, err = x509.ParsePKCS1PrivateKey(pemBlock2.Bytes) //pemBlock2.Bytes
 	if err != nil {
 		return nil, nil, err
 	}
