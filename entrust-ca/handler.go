@@ -129,17 +129,17 @@ func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error)
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
 	}
 
-	/*fakePrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	fakePrivKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return "", err
 	}
 	fakePrivKey.PublicKey.N = PK.N
-	fakePrivKey.PublicKey.E = PK.E*/
+	fakePrivKey.PublicKey.E = PK.E
 
 	caPKfake.PublicKey.N = PK.N
 	caPKfake.PublicKey.E = PK.E
 
-	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &caPKfake.PublicKey, caPK)
+	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &fakePrivKey.PublicKey, caPK)
 	if err != nil {
 		return "", err
 	}
