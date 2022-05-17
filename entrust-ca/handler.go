@@ -47,7 +47,6 @@ var ca_key_str string = "-----BEGIN RSA PRIVATE KEY-----\nMIIEpQIBAAKCAQEAtER283
 
 var ca *x509.Certificate
 var caPK *rsa.PrivateKey
-var caPKfake *rsa.PrivateKey
 
 func Handle(w http.ResponseWriter, req *http.Request) {
 	// get our CA cert and priv key
@@ -89,7 +88,6 @@ func certsetup() (err error) {
 	if err != nil {
 		return err
 	}
-	caPKfake = caPK
 	return
 }
 
@@ -135,9 +133,6 @@ func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error)
 	}
 	fakePrivKey.PublicKey.N = PK.N
 	fakePrivKey.PublicKey.E = PK.E
-
-	caPKfake.PublicKey.N = PK.N
-	caPKfake.PublicKey.E = PK.E
 
 	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &fakePrivKey.PublicKey, caPK)
 	if err != nil {
