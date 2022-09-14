@@ -1,2 +1,1 @@
-# ofc-tryout
-# ofc-tryout
+# OpenFaaS Cloud Demo
