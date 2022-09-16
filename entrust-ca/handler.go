@@ -49,19 +49,20 @@ var ca *x509.Certificate
 var caPK *rsa.PrivateKey
 
 func Handle(w http.ResponseWriter, req *http.Request) {
-	// get our CA cert and priv key
-	err := certsetup()
-	if err != nil {
-		io.WriteString(w, err.Error())
-	}
-
-	if req.Method == "GET" {
+	if req.Method != "POST" {
 		io.WriteString(w, "This service only accepts POST method")
 	} else {
+		// get our CA cert and priv key	
+		err := certsetup()
+		if err != nil {
+			io.WriteString(w, err.Error())
+		}
+
 		s, err := certsigning(w, req)
 		if err != nil {
 			io.WriteString(w, err.Error())
 		}
+
 		io.WriteString(w, "Here is your TLS certificate signed:\n")
 		io.WriteString(w, s)
 	}
@@ -134,7 +135,11 @@ func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error)
 	fakePrivKey.PublicKey.N = PK.N
 	fakePrivKey.PublicKey.E = PK.E
 
-	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &fakePrivKey.PublicKey, caPK)
+	var CertPublicKey *rsa.PublicKey
+	CertPublicKey.N = PK.N
+	CertPublicKey.E = PK.E
+
+	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &CertPublicKey, caPK)
 	if err != nil {
 		return "", err
 	}
