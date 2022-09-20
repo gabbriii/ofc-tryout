@@ -1,2 +1,1 @@
 # OpenFaaS Cloud Demo
-# Trigger
