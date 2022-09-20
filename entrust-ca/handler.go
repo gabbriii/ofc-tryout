@@ -142,8 +142,8 @@ func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error)
 	var CertPublicKey *rsa.PublicKey
 	CertPublicKey.N = PK.N
 	CertPublicKey.E = PK.E
-
-	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &CertPublicKey, caPK)
+	//clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &CertPublicKey, caPK)
+	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &fakePrivKey.PublicKey, caPK)
 	if err != nil {
 		return "", err
 	}
