@@ -49,31 +49,27 @@ var ca *x509.Certificate
 var caPK *rsa.PrivateKey
 
 func Handle(w http.ResponseWriter, req *http.Request) {
-	err := certsetup()
-	if err != nil {
-		io.WriteString(w, "certsetup\n")
-		io.WriteString(w, err.Error())
-	}
-	io.WriteString(w, "salgo de certsetup\n")
-
 	if req.Method != "POST" {
 		io.WriteString(w, "This service only accepts POST method")
 	} else {
 		// get our CA cert and priv key
-		s, err := certsigning(w, req)
+		err := certSetup()
 		if err != nil {
-			io.WriteString(w, "certsigning\n")
+			io.WriteString(w, "certsetup\n")
 			io.WriteString(w, err.Error())
 		}
-		io.WriteString(w, "dalgo de certsigning\n")
 
+		// sign a CSR
+		s, err := certSigning(w, req)
+		if err != nil {
+			io.WriteString(w, err.Error())
+		}
 		io.WriteString(w, "Here is your TLS certificate signed:\n")
 		io.WriteString(w, s)
 	}
 }
 
-func certsetup() (err error) {
-	//new begin
+func certSetup() (err error) {
 	var CA []byte = []byte(ca_str)
 	var CA_KEY []byte = []byte(ca_key_str)
 
@@ -96,7 +92,7 @@ func certsetup() (err error) {
 	return
 }
 
-func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error) {
+func certSigning(w http.ResponseWriter, req *http.Request) (s string, err error) {
 	req.Body = http.MaxBytesReader(w, req.Body, 1048576)
 	dec := json.NewDecoder(req.Body)
 	var CSR csr
@@ -108,7 +104,7 @@ func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error)
 	if err != nil {
 		return "", err
 	}
-	PK := get_PK([]byte(CSR.PublicKey), n)
+	PK := getPK([]byte(CSR.PublicKey), n)
 
 	clientcertTemplate := x509.Certificate{
 		Signature:          []byte(CSR.Signature),
@@ -132,6 +128,7 @@ func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error)
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
 	}
 
+	// generating a fake private key
 	fakePrivKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return "", err
@@ -139,10 +136,7 @@ func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error)
 	fakePrivKey.PublicKey.N = PK.N
 	fakePrivKey.PublicKey.E = PK.E
 
-	//var CertPublicKey *rsa.PublicKey
-	//CertPublicKey.N = PK.N
-	//CertPublicKey.E = PK.E
-	//clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &CertPublicKey, caPK)
+	// signing
 	clientcertBytes, err := x509.CreateCertificate(rand.Reader, &clientcertTemplate, ca, &fakePrivKey.PublicKey, caPK)
 	if err != nil {
 		return "", err
@@ -152,12 +146,11 @@ func certsigning(w http.ResponseWriter, req *http.Request) (s string, err error)
 		Type:  "CERTIFICATE",
 		Bytes: clientcertBytes,
 	})
-
 	s = clientcertPEM.String()
 	return
 }
 
-func get_PK(b []byte, CSR int) (PK PublicKey) {
+func getPK(b []byte, CSR int) (PK PublicKey) {
 	n := new(big.Int)
 	PK.N = n.SetBytes(b)
 	PK.E = CSR
