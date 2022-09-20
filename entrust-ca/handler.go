@@ -64,7 +64,6 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		}
 
 		io.WriteString(w, "Here is your TLS certificate signed:\n")
-		io.WriteString(w, "Little update\n")
 		io.WriteString(w, s)
 	}
 }
