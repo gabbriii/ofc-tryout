@@ -49,16 +49,16 @@ var ca *x509.Certificate
 var caPK *rsa.PrivateKey
 
 func Handle(w http.ResponseWriter, req *http.Request) {
+	err := certsetup()
+	if err != nil {
+		io.WriteString(w, "certsetup\n")
+		io.WriteString(w, err.Error())
+	}
+
 	if req.Method != "POST" {
 		io.WriteString(w, "This service only accepts POST method")
 	} else {
 		// get our CA cert and priv key
-		err := certsetup()
-		if err != nil {
-			io.WriteString(w, "certsetup\n")
-			io.WriteString(w, err.Error())
-		}
-
 		s, err := certsigning(w, req)
 		if err != nil {
 			io.WriteString(w, "certsigning\n")
