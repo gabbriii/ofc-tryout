@@ -55,11 +55,13 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		// get our CA cert and priv key
 		err := certsetup()
 		if err != nil {
+			io.WriteString(w, "certsetup\n")
 			io.WriteString(w, err.Error())
 		}
 
 		s, err := certsigning(w, req)
 		if err != nil {
+			io.WriteString(w, "certsigning\n")
 			io.WriteString(w, err.Error())
 		}
 
