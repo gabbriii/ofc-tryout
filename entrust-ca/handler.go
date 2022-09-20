@@ -83,7 +83,14 @@ func certSetup() (err error) {
 		panic("caKey")
 		//return err
 	}
-
+	pemBlock, _ := pem.Decode(caCert)
+	if pemBlock == nil {
+		panic("pem.Decode CA failed")
+	}
+	pemBlock2, _ := pem.Decode(caKey)
+	if pemBlock2 == nil {
+		panic("pem.Decode CA_KEY failed")
+	}
 	/*pemBlock, _ := pem.Decode(CA)
 	if pemBlock == nil {
 		panic("pem.Decode CA failed")
@@ -100,12 +107,12 @@ func certSetup() (err error) {
 	if err != nil {
 		return err
 	}*/
-	ca, err = x509.ParseCertificate(caCert) //pemBlock.Bytes
+	ca, err = x509.ParseCertificate(pemBlock.Bytes) //pemBlock.Bytes
 	if err != nil {
 		panic("caCertPem")
 		//return err
 	}
-	caPK, err = x509.ParsePKCS1PrivateKey(caKey) //pemBlock2.Bytes
+	caPK, err = x509.ParsePKCS1PrivateKey(pemBlock2.Bytes) //pemBlock2.Bytes
 	if err != nil {
 		panic("caKeyPem")
 		//return err
