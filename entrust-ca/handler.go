@@ -56,7 +56,6 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		// get our CA cert and priv key
 		err := certSetup()
 		if err != nil {
-			io.WriteString(w, "certsetup\n")
 			io.WriteString(w, err.Error())
 		}
 
@@ -76,11 +75,13 @@ func certSetup() (err error) {
 
 	caCert, err := os.ReadFile("./static/rootCACert.pem")
 	if err != nil {
-		return err
+		panic("caCert")
+		//return err
 	}
 	caKey, err := os.ReadFile("./static/rootCAKey.pem")
 	if err != nil {
-		return err
+		panic("caKey")
+		//return err
 	}
 
 	/*pemBlock, _ := pem.Decode(CA)
@@ -101,11 +102,13 @@ func certSetup() (err error) {
 	}*/
 	ca, err = x509.ParseCertificate(caCert) //pemBlock.Bytes
 	if err != nil {
-		return err
+		panic("caCertPem")
+		//return err
 	}
 	caPK, err = x509.ParsePKCS1PrivateKey(caKey) //pemBlock2.Bytes
 	if err != nil {
-		return err
+		panic("caKeyPem")
+		//return err
 	}
 	return
 }
