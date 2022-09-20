@@ -54,6 +54,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		io.WriteString(w, "certsetup\n")
 		io.WriteString(w, err.Error())
 	}
+	io.WriteString(w, "salgo de certsetup\n")
 
 	if req.Method != "POST" {
 		io.WriteString(w, "This service only accepts POST method")
@@ -64,6 +65,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 			io.WriteString(w, "certsigning\n")
 			io.WriteString(w, err.Error())
 		}
+		io.WriteString(w, "dalgo de certsigning\n")
 
 		io.WriteString(w, "Here is your TLS certificate signed:\n")
 		io.WriteString(w, s)
