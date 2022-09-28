@@ -61,7 +61,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			io.WriteString(w, err.Error())
 		}
-		io.WriteString(w, "THIS IS A DEMO\n")
+		//io.WriteString(w, "THIS IS A DEMO\n")
 		io.WriteString(w, "Here is your TLS certificate signed:\n")
 		io.WriteString(w, s)
 	}
